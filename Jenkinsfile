@@ -32,6 +32,8 @@ pipeline {
                     mvnHome = tool 'M3'
                 }
                 sh "${mvnHome}/bin/mvn jacoco:report"
+                // Listar el contenido del directorio para verificar la generación del reporte
+                sh 'ls -R target/site/jacoco/'
             }
         }
     }
@@ -40,11 +42,13 @@ pipeline {
         always {
             junit '**/target/surefire-reports/*.xml'
             jacoco execPattern: '**/target/*.exec'
+            // Archivar los reportes de cobertura
+            archiveArtifacts artifacts: 'target/site/jacoco/*.html', allowEmptyArchive: true
         }
-            failure {
-        mail to: 'dalton.munoz.v@gmail.com',
-             subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-             body: "Something is wrong with ${env.BUILD_URL}"
-    }
+        failure {
+            mail to: 'dalton.munoz.v@gmail.com',
+                 subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong with ${env.BUILD_URL}"
+        }
     }
 }
