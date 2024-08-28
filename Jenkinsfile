@@ -41,5 +41,10 @@ pipeline {
             junit '**/target/surefire-reports/*.xml'
             jacoco execPattern: '**/target/*.exec'
         }
+            failure {
+        mail to: 'dalton.munoz.v@gmail.com',
+             subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+             body: "Something is wrong with ${env.BUILD_URL}"
+    }
     }
 }
